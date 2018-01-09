@@ -59,9 +59,9 @@ var district =["Dhamtari","Bilaspur","Aizawl","Baran","Jaipur","Jhalawar","Siroh
 // data manupulation global ended
 var final_state_level_data = [];
 
-  d3.csv("./IMT/DATA/English.csv",function(error,d){
+  d3.csv("../IMT/DATA/English.csv",function(error,d){
      if (error) throw error;
-     d3.csv("./IMT/DATA/Hindi.csv",function(error,d2){
+     d3.csv("../IMT/DATA/Hindi.csv",function(error,d2){
         if (error) throw error;
         d.forEach(function(d1)
          {
@@ -130,7 +130,7 @@ var final_state_level_data = [];
     final_state_level_data.sort(function(a, b) { return b[final_state_level_data[final_state_level_data.length-1].columns[1]] / b.total - a[final_state_level_data[final_state_level_data.length-1].columns[1]] / a.total; });
 x.domain(final_state_level_data.map(function(newArray) { return newArray.state; }));
 z.domain(final_state_level_data[final_state_level_data.length-1].columns.slice(1));
-console.log('hi');
+//console.log(final_state_level_data);
 var serie = g.selectAll("g")
     .data(stack.keys(final_state_level_data[final_state_level_data.length-1].columns.slice(1))(final_state_level_data))
     .enter()
@@ -139,11 +139,16 @@ var serie = g.selectAll("g")
     .attr("fill", function(newArray) {return z(newArray.key);});
 
 serie.selectAll("g")
-    .data(function(d11) {return d11;})
+    .data(function(d11) { console.log(d11);
+      return d11;})
     .enter().append("rect")
     .attr("x", function(d11) {return x(d11.data.state);})
-    .attr("y", function(d11) {return y(d11[1]);})
-    .attr("height", function(d11) {return y(d11[0]) - y(d11[1]); })
+    .attr("y", function(d11) {
+      //console.log(y(d11[1]));
+      return y(d11[1]);})
+    .attr("height", function(d11) {
+      //console.log(y(d11[0])-y(d11[1]));
+      return y(d11[0]) - y(d11[1]); })
     .attr("width", x.bandwidth())
     .on("mouseover", function(d11){
             var xPos = parseFloat(d3.select(this).attr("x"));
