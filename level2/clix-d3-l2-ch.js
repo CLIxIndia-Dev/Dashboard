@@ -89,7 +89,7 @@ d3.csv("../IMT/DATA/English.csv",function(error,d){
     state_level.values.forEach(function(district_level){
 
          //district_level_no_data_available_school = district_level_no_data_available_school + district_level.values.length
-         console.log(district_level.values[district_level.values.length-1].values[0].district_entry);
+        // console.log(district_level.values[district_level.values.length-1].values[0].district_entry);
         if(district_level.values[district_level.values.length-1].values[0].district_entry == 1)
         {
           if(district_level.values[district_level.values.length-1].values[0].CLIxModule_Impl == 1)
@@ -107,7 +107,7 @@ d3.csv("../IMT/DATA/English.csv",function(error,d){
 
 
                      //starting all conditions for quality check
-                     console.log(implemented_school_count.values[implemented_school_count.values.length - 1]);
+                     //console.log(implemented_school_count.values[implemented_school_count.values.length - 1]);
                     if(implemented_school_count.values[implemented_school_count.values.length-1].district_entry == "1")
                     {
                     if(implemented_school_count.values[implemented_school_count.values.length-1]["Observe_session:Session_observe"]=="1")
