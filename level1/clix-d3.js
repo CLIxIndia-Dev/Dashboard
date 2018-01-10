@@ -10,6 +10,7 @@ if(dd<10){
 if(mm<10){
     mm='0'+mm;
 }
+
 var today = dd+'/'+mm+'/'+yyyy;*/
 var svg = d3.select('body').append("svg").attr("width", 960).attr("height", 400).attr("align","center"),
     margin = {top: 50, right: 60, bottom: 30, left: 80},
@@ -23,7 +24,8 @@ var svg = d3.select('body').append("svg").attr("width", 960).attr("height", 400)
     .attr("x",960/2)
     .attr("y","30")
     .attr("text-anchor","middle")
-    .text("CLIx Implementation Status [Last update: "),
+    .text("CLIx Implementation Status [Last Update :");
+
     g = svg.append("g").append("text").attr("text-anchor","middle").attr("x",-200).attr("dy", "2em").attr("transform", "rotate(-90)").text("Percent of CLIx School");
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 var x = d3.scaleBand()
@@ -49,6 +51,7 @@ var stack = d3.stack()
 var states = ["Chhattisgarh","Mizoram","Rajasthan","Telangana"]
 var statesTotalSchools = [30,30,101,300]
 var newArray = [];
+var latest_date;
 
 //This Array is getting mapped with the colors that appear on the graph hence if we need to change the seqence of the data that is getting visualised then the position of names in this array is to be changed.
 
@@ -90,9 +93,11 @@ var final_state_level_data = [];
                     .key(function(newArray){return newArray.CLIx_code;})
                     .key(function(newArray){return newArray.survey_time;})
                     .entries(newArray);
-    console.log(newArray);
+    latest_date = newArray[newArray.length-1].survey_time;
+    console.log(latest_date);
+
 //  State Level Nesting happens here
-//    console.log(nestedData)
+//console.log(nestedData);
     nestedData.forEach(function(state_level){
         var data = {};
         var state_level_implemented_school=0;
@@ -104,7 +109,8 @@ var final_state_level_data = [];
         state_level.values.forEach(function(district_level){
 
             state_level_no_data_available_school = state_level_no_data_available_school + district_level.values.length
-            district_level.values.forEach(function(implemented_school_count){
+            district_level.values.forEach(function(implemented_school_count)
+            {
             district_name = district[district_level.key-1];
 //                    console.log(implemented_school_count.values[implemented_school_count.values.length - 1]);
                     if(implemented_school_count.values[implemented_school_count.values.length - 1].values[0]["CLIxModule_Impl"]== 1 ){
@@ -130,7 +136,8 @@ var final_state_level_data = [];
     final_state_level_data.sort(function(a, b) { return b[final_state_level_data[final_state_level_data.length-1].columns[1]] / b.total - a[final_state_level_data[final_state_level_data.length-1].columns[1]] / a.total; });
 x.domain(final_state_level_data.map(function(newArray) { return newArray.state; }));
 z.domain(final_state_level_data[final_state_level_data.length-1].columns.slice(1));
-//console.log(final_state_level_data);
+console.log(final_state_level_data);
+
 var serie = g.selectAll("g")
     .data(stack.keys(final_state_level_data[final_state_level_data.length-1].columns.slice(1))(final_state_level_data))
     .enter()
@@ -241,6 +248,11 @@ var legend = g.selectAll(".legend")
       .attr("dy", ".35em")
       .attr("text-anchor", "start")
       .text(function(newArray) { return newArray; })
+      g = svg.append("text")
+      .attr("x",700)
+      .attr("y","30")
+      .attr("text-anchor","middle")
+      .text(" " + latest_date  + " ]");
 
 function updateDistrictData(newArray){
 //    console.log()

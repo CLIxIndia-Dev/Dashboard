@@ -2,7 +2,7 @@ var district =["Dhamtari","Bilaspur","Aizawl","Baran","Jaipur","Jhalawar","Siroh
 var states = ["Chhattisgarh","Mizoram","Rajasthan","Telangana"];
 var statesTotalSchools = [30,30,101,300];
 var chattisgarh_schools_quality = [];
-var columns1 = ["District","NoOfImplementedSchools","noOfNotImplementedSchools","no Data Availabe Schools"];
+var columns1 = ["District","noOfImplementedSchools","noOfNotImplementedSchools","noDataAvailabeSchools"];
 var Chhattisgarh_districts = "Dhamtari";
 var Chhattisgarh_total_Schools = [30];
 
@@ -13,16 +13,14 @@ var svg = d3.select("body").append("svg").attr("width", 960).attr("height", 400)
     width = +svg.attr("width") - margin.left - margin.right-300,
     height = +svg.attr("height") - margin.top - margin.bottom,
     g = svg.append("rect")
-    .attr("width","76%")
+    .attr("width","50%")
     .attr("height","100%")
     .attr("fill","#fcfbfb"),
-    g = svg.append("text")
-    .attr("x",960/3)
-    .attr("y","30")
-    .attr("text-anchor","middle")
-    .text("CLIx Implementation Status in Chhattisgarh [Last update: October 10th 2017]"),
-     g = svg.append("g").append("text").attr("text-anchor","middle").attr("x",-200).attr("dy", "2em").attr("transform", "rotate(-90)").text("Percent of CLIx School");
+
+     g = svg.append("g").append("text").attr("text-anchor","middle").attr("x",-200).attr("dy", "1em").attr("transform", "rotate(-90)").text("Percent of CLIx School");
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
 
 var x = d3.scaleBand()
     .rangeRound([0, width])
@@ -195,6 +193,8 @@ d3.csv("../IMT/DATA/English.csv",function(error,d){
          Stdata = {districts : Chhattisgarh_districts,noOfImplementedSchools: district_level_implemented_school ,noOfNotImplementedSchools:district_level_not_implemented_school,noDataAvailabeSchools : district_level_no_data_available_school}
         final_state_level_data.push(Stdata);
            final_state_level_data.push({columns : columns1});
+           final_state_level_data.sort(function(a, b) { return b[final_state_level_data[final_state_level_data.length-1].columns[1]] / b.total - a[final_state_level_data[final_state_level_data.length-1].columns[1]] / a.total; });
+
            x.domain(final_state_level_data.map(function(newArray) { return newArray.districts; }));
            z.domain(final_state_level_data[final_state_level_data.length-1].columns.slice(1));
            console.log(final_state_level_data);
@@ -227,10 +227,10 @@ d3.csv("../IMT/DATA/English.csv",function(error,d){
                .attr("fill", function(d) {return z(d.key);});
            console.log(stack.keys(final_state_level_data[final_state_level_data.length-1].columns.slice(1))(final_state_level_data))
            serie.selectAll("rect")
-               .data(function(d) { return d;})
+               .data(function(d) { console.log(d); return d;})
                .enter().append("rect")
-               .attr("x", function(d) {return x(d.data.districts) + 100;})
-               .attr("y", function(d){return y(d[1]) ;})
+               .attr("x", function(d) {console.log(x(d.data.districts)); return x(d.data.districts) + 100;})
+               .attr("y", function(d){console.log(y(d.data)); return y(d[1]) ;})
                .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                .attr("width", x.bandwidth()-200)
                .on("mouseover", function(d){
@@ -256,13 +256,14 @@ d3.csv("../IMT/DATA/English.csv",function(error,d){
            				.attr("text-anchor","right")
            				.text(function(){
            				       if(color == "#821C66"){
-           				    return "No Of school:- " + d.data.Implemented;
-           				    }else if (color == "#56489e"){
+           				    return "No Of Implemented schools: " + d.data.noOfImplementedSchools;
+           				    }
+                      else if (color == "#56489e"){
            				        console.log(d);
-           				    return "Implementation in progess:- " + d.newArray["Implementation In Progress"];
+           				    return "No of Not Implemented schools: " + d.data["noOfNotImplementedSchools"];
            				    }
            				    else if (color == "#7b6888"){
-           				       return "Data collection in progress:- " + d.newArray["Data Collection In Progress"]
+           				       return "Data collection in progress: " + d.data["noDataAvailabeSchools"];
            				    }
            				})
 
@@ -304,9 +305,43 @@ d3.csv("../IMT/DATA/English.csv",function(error,d){
                .attr("class", "axis axis--y")
                .call(d3.axisLeft(y).ticks(10, "%"));
 
-       });
-     });
+               g = svg.append("text")
+               .attr("x",960/3)
+               .attr("y","30")
+               .attr("text-anchor","middle")
+               .text("CLIx Implementation Status in Chhattisgarh [Last update: " );
+//adding pie chart as well
 
+
+var w = 300;
+h = 300;
+r = 100;
+
+data = [{"label" : "Below Average", "value" : number_of_below_average_schools},{"label" : "Average", "value" : number_of_average_schools},{"label" : "Good", "value" : number_of_good_schools},{"label" : "Excellent", "value" : number_of_excellent_schools}];
+console.log(data);
+var svg1 = d3.select("body").append("svg:svg").data([data])
+              .attr("width",w)
+              .attr("height",h)
+              .append("svg:g")
+              .attr("transform","translate(" + r + "," + r + ")");
+
+var color = d3.scaleOrdinal(["#821C66", "#56489e", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+
+var arc = d3.arc().outerRadius(r).innerRadius(0);
+var pie = d3.pie().value(function(d,i) { return data[i].value ; });
+var arcs = svg1.selectAll("g.slice").data(pie).enter().append("svg:g").attr("class","slice");
+arcs.append("svg:path").attr("fill", function(d,i) { return color(i); })
+                       .attr("d",arc);
+arcs.append("svg:text").attr("transform", function(d) {
+                        d.innerRadius = 0;
+                        d.outerRadius = r;
+                        return "translate(" + arc.centroid(d) + ")";
+                      })
+                      .attr("text-anchor","middle")
+                      .text(function(d,i){return data[i].label ; });
+
+                    });
+                    });
 
   //final object that is to be sent to d3 visulisation code
 
